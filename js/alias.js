@@ -1,4 +1,4 @@
 aliasClass = {
-  'mb': 'margin-bottom'
-  // 'db': 'display: block'
+	'pb': 'padding-bottom',
+	'w': 'width'
 }

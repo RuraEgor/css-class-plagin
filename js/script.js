@@ -6,7 +6,7 @@ function addNewClass() {
 	
 	//	bodyEl.innerHTML = con;
 	
-	const re = /class=("|').*@.*("|')/ig;
+	const re = /class=("|').*№.*("|')/ig;
 	
 	found = elemText.match(re);
 	
@@ -37,7 +37,7 @@ function addNewClass() {
 	
 	
 	//====  DELETE DUOBLICATE
-	const regSpeshSimv = /.*@.*/;
+	const regSpeshSimv = /.*№.*/;
 	
 	massClass = massClass.sort().reduce(function(arr, el){
 		if(!arr.length || arr.length && arr[arr.length - 1] != el) {
@@ -54,10 +54,16 @@ function addNewClass() {
 	
 	//====
 	const regBegClass = /^[A-Za-z]+/i;
-	const regDataClass = /([\d]*)[^\d]*@+/i;
-	const regDataEd = /[\d]*([^\d-^!]*)[!]?@+/i;
-	const regImpot = /([!]?)@+/i;
-	const regSizeClass = /@+(.*)/i;
+	const regDataClass = /([\d]*)[^\d]*№+/;
+	const regDataEd = /[\d]*([^\d-^I]*)[I]?№+/;
+	const regImpot = /([I]?)№+/;
+	
+	const regSizeClass = /№{1}(.*)$/i;
+	
+	const regSizeClassMax = /№{1}([\d]*).*$/i;
+	const regSizeNeg = /№{1}[\d]*[-]{1}([\d]*)$/i;
+	
+	// const regSizeClass = /№+(.*)/i;
 	
 	
 	nameClasses = [];
@@ -69,8 +75,8 @@ function addNewClass() {
 			nameClas: '',
 			nameProp: '',
 			znProp: '',
-			edProp: '',
-			importProp: false,
+			edProp: 'px',
+			importProp: '',
 			maxSize: '',
 			minSize: ''
 		}
@@ -81,9 +87,6 @@ function addNewClass() {
 		const nameProp = found[key].match(regBegClass)[0];
 		
 		for (let item in aliasClass) {
-			console.log("dddddddddd-88888", item );
-			console.log("dddddddddd-nnnnnn", nameProp );
-			
 			if (item == nameProp) {
 				dataClass.nameProp = aliasClass[item];
 			}
@@ -93,20 +96,23 @@ function addNewClass() {
 		let root7888 = massClass[key].match(regDataClass)[1];
 		dataClass.znProp = root7888;
 		
-		
-		root7888 = massClass[key].match(regDataEd)[1];
-		dataClass.edProp = root7888;
-		
+		if (massClass[key].match(regDataEd)[1]) {
+			dataClass.edProp = massClass[key].match(regDataEd)[1];
+		}
 		
 		if (massClass[key].match(regImpot)[1]) {
-			dataClass.importProp = true;
+			dataClass.importProp = ' !important';
 		}
 		
 		//----
 		if (massClass[key].match(regSizeClass)) {
-			let root7888 = massClass[key].match(regSizeClass)[1];
-			if (root7888) {
-				dataClass.maxSize = root7888;
+			
+			if (massClass[key].match(regSizeClassMax)) {
+				dataClass.maxSize = massClass[key].match(regSizeClassMax)[1];
+			}
+
+			if (massClass[key].match(regSizeNeg)) {
+				dataClass.minSize = massClass[key].match(regSizeNeg)[1];
 			}
 		}
 		
@@ -115,4 +121,54 @@ function addNewClass() {
 		console.log("WWWWWWWWWWWWWWWWWW", nameClasses );
 	}
 	
+	//==================================
+	
+	let allScringStyle = '';
+	
+	for ( item of nameClasses ) {
+		
+		let cssProp = `.${item.nameClas} {
+			${item.nameProp}: ${item.znProp}${item.edProp}${item.importProp}
+		};`;
+		
+		
+		let cssSizeProp = cssProp;
+		
+		if (item.maxSize) {
+			cssSizeProp = `@media (max-width: ${item.maxSize}px) {
+				${cssProp}
+			}`;
+		}
+		
+		if (item.minSize) {
+			cssSizeProp = `@media (min-width: ${item.minSize}px) {
+				${cssProp}
+			}`;
+		}
+		
+		if (item.maxSize && item.minSize) {
+			cssSizeProp = `@media (max-width: ${item.maxSize}px) and (min-width: ${item.minSize}px) {
+				${cssProp}
+			}`;
+		}
+		
+		allScringStyle += ` ${cssSizeProp}`;
+		
+		console.log("bbbbbbbbbbbbbbbbbbb", allScringStyle );
+	}
+	
+	
+	var css = allScringStyle,
+		head = document.head || document.getElementsByTagName('head')[0],
+		style = document.createElement('style');
+	
+	style.type = 'text/css';
+	if (style.styleSheet){
+		// This is required for IE8 and below.
+		style.styleSheet.cssText = css;
+	} else {
+		style.appendChild(document.createTextNode(css));
+	}
+	
+	head.appendChild(style);
 }
