@@ -3,22 +3,12 @@ function addNewClass() {
 	const elemText = bodyEl.outerHTML;
 
 	const srhEl = 'XX';
-	
-<<<<<<< HEAD
+
 	// const re = /class=("|').*XX.*("|')/ig;
 
 	const re = /class=("|').*XX.*("|')/ig;
 
 	let found = elemText.match(re);
-=======
-	//	const con = elemText.replace(/class/g, "daaaaam");
-	
-	//	bodyEl.innerHTML = con;
-	
-	const re = /class=("|').*№.*("|')/ig;
-	
-	found = elemText.match(re);
->>>>>>> a48eb222fffe68792cb54c2f02241d1946d1090b
 	
 	// console.log("rrrrrrrrrr", found );
 	
